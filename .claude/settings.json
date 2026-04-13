@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "exemplo": {
+      "command": "python3",
+      "args": ["./mcp-servidor/servidor.py"],
+      "env": {}
+    }
+  }
+}
