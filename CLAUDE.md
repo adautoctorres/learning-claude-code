@@ -8,13 +8,14 @@ Repositório de exemplos práticos para aprender a estender o Claude Code com **
 
 ## Configuração do servidor MCP
 
-Antes de usar as ferramentas MCP, instale a dependência Python:
+O servidor MCP usa um virtualenv local. Para configurar:
 
 ```bash
-pip install mcp
+python -m venv .venv
+.venv/bin/pip install mcp
 ```
 
-Reinicie o Claude Code após instalar para que o servidor `exemplo` seja carregado.
+O servidor é registrado em `.claude/settings.json` e executa `mcp/meu-mcp.py` via `.venv/bin/python`. Reinicie o Claude Code após qualquer alteração na configuração.
 
 ## Skills disponíveis
 
@@ -27,42 +28,21 @@ Reinicie o Claude Code após instalar para que o servidor `exemplo` seja carrega
 
 | Nome | Ferramentas | Quando usar |
 |------|-------------|-------------|
-| `revisor-codigo` | Read, Grep, Glob | Análise de qualidade, bugs e segurança de código |
+| `revisor-codigo` | Read, Grep, Glob, mcp__ide__getDiagnostics | Análise de qualidade, bugs e segurança de código |
 | `pesquisador-docs` | Read, Grep, Glob, WebSearch, WebFetch | Pesquisa em documentação local ou web |
 
 O Claude pode invocar esses agents automaticamente ou você pode solicitá-lo explicitamente.
 
-## Ferramentas MCP (servidor `exemplo`)
+## Ferramentas MCP (servidor `meu-mcp`)
 
-Após instalar e reiniciar, as ferramentas ficam disponíveis como `mcp__exemplo__<nome>`:
+Disponíveis como `mcp__meu-mcp__<nome>`:
 
 | Ferramenta | Parâmetros |
 |------------|------------|
-| `mcp__exemplo__saudacao` | `nome: string` |
-| `mcp__exemplo__calcular` | `a: number`, `b: number`, `operacao: "+" \| "-" \| "*" \| "/"` |
-| `mcp__exemplo__formatar_json` | `entrada: string` |
+| `mcp__meu-mcp__somar` | `a: int`, `b: int` |
+| `mcp__meu-mcp__enviar_mensagem` | `mensagem: string` |
 
-## Estrutura de configuração local
-
-```
-.claude/
-├── commands/          # Skills (slash commands)
-│   ├── resumir.md
-│   └── revisar.md
-├── agents/            # Agents e subagents
-│   ├── revisor-codigo.md
-│   └── pesquisador-docs.md
-└── settings.json      # Registro de servidores MCP
-
-mcp-servidor/
-├── servidor.py        # Implementação do servidor MCP
-└── requirements.txt
-
-docs/
-├── guia-skills.md           # Como criar skills
-├── guia-agents-subagents.md # Como criar agents e subagents
-└── guia-mcp.md              # Como criar servidores MCP
-```
+O servidor está em `mcp/meu-mcp.py` e usa `FastMCP` da biblioteca `mcp`.
 
 ## Documentação detalhada
 

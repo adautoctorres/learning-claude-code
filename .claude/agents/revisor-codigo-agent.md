@@ -1,5 +1,5 @@
 ---
-name: revisor-codigo
+name: revisor-codigo-agent
 description: Especialista em revisão de código. Use este agente quando precisar analisar qualidade, bugs, segurança ou conformidade de arquivos de código. Retorna relatório estruturado em português.
 model: sonnet
 tools: Read, Grep, Glob, mcp__ide__getDiagnostics

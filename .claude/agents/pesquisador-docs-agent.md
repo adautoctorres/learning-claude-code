@@ -1,5 +1,5 @@
 ---
-name: pesquisador-docs
+name: pesquisador-docs-agent
 description: Pesquisa e sintetiza informações técnicas a partir de documentação, arquivos do projeto e fontes web. Use quando precisar de respostas baseadas em evidências antes de tomar decisões de implementação.
 model: sonnet
 tools: Read, Grep, Glob, WebSearch, WebFetch

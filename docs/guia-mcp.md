@@ -10,108 +10,124 @@ Claude Code  ──stdio──►  servidor MCP  ──►  suas ferramentas/dad
 
 O Claude chama ferramentas MCP da mesma forma que chama ferramentas nativas (`Read`, `Bash`, etc.), mas o nome segue o padrão `mcp__<servidor>__<ferramenta>`.
 
-**Exemplo:** ferramenta `saudacao` do servidor `exemplo` → `mcp__exemplo__saudacao`
+**Exemplo:** ferramenta `somar` do servidor `mcp-somar` → `mcp__mcp-somar__somar`
 
 ## Registro do servidor
 
-Edite `.claude/settings.json` (configuração local do projeto):
+Use o CLI do Claude Code para registrar servidores MCP:
 
-```json
-{
-  "mcpServers": {
-    "nome-do-servidor": {
-      "command": "python3",
-      "args": ["./caminho/para/servidor.py"],
-      "env": {
-        "VARIAVEL": "valor"
-      }
-    }
-  }
-}
+```bash
+# Registrar um servidor (escopo local ao projeto)
+claude mcp add --scope local <nome> <comando> <arquivo>
+
+# Remover um servidor
+claude mcp remove <nome> --scope local
 ```
 
-### Campos
+### Servidores deste projeto
 
-| Campo | Descrição |
-|-------|-----------|
-| `command` | Executável (`python3`, `node`, `npx`, etc.) |
-| `args` | Lista de argumentos passados ao comando |
-| `env` | Variáveis de ambiente adicionais (tokens, configs) |
+```bash
+# Registrar o servidor de soma
+claude mcp add --scope local mcp-somar python mcp/mcp-somar.py
+
+# Remover o servidor de soma
+claude mcp remove mcp-somar --scope local
+
+# Registrar o servidor de mensagem
+claude mcp add --scope local mcp-mensagem python mcp/mcp-mensagem.py
+
+# Remover o servidor de mensagem
+claude mcp remove mcp-mensagem --scope local
+```
 
 O Claude Code inicia o processo automaticamente ao abrir uma sessão no diretório do projeto.
 
-## Servidor de exemplo neste projeto
+## Servidores neste projeto
 
-**Arquivo:** `mcp-servidor/servidor.py`  
-**Registro:** `.claude/settings.json` → chave `"exemplo"`
+Os servidores ficam na pasta `mcp/` e usam `FastMCP` para uma API simplificada.
 
-### Ferramentas expostas
+| Servidor | Arquivo | Ferramenta | Parâmetros |
+|----------|---------|------------|------------|
+| `mcp-somar` | `mcp/mcp-somar.py` | `somar` | `a: int`, `b: int` |
+| `mcp-mensagem` | `mcp/mcp-mensagem.py` | `enviar_mensagem` | `mensagem: str` |
 
-| Ferramenta | Descrição | Parâmetros |
-|------------|-----------|------------|
-| `saudacao` | Saudação com data/hora | `nome: string` |
-| `calcular` | Operações básicas (+,-,*,/) | `a: number`, `b: number`, `operacao: string` |
-| `formatar_json` | Formata JSON com indentação | `entrada: string` |
+### Uso das ferramentas
+
+```
+mcp__mcp-somar__somar          → soma dois inteiros
+mcp__mcp-mensagem__enviar_mensagem → envia uma mensagem de texto
+```
 
 ## Instalação e execução
 
 ```bash
-# Instalar dependência
-pip install mcp
+# Criar virtualenv e instalar dependência
+python -m venv .venv
+.venv/bin/pip install mcp
 
-# Testar o servidor isoladamente (opcional)
-python3 mcp-servidor/servidor.py
+# Testar um servidor isoladamente (opcional)
+.venv/bin/python mcp/mcp-somar.py
 # Aguarda conexão via stdin — Ctrl+C para sair
 ```
 
-Após instalar, reinicie o Claude Code para que o servidor seja registrado.
+Após instalar, reinicie o Claude Code para que os servidores sejam registrados.
 
-## Estrutura de um servidor MCP em Python
+## Estrutura de um servidor MCP com FastMCP
+
+FastMCP é a forma mais simples de criar servidores MCP em Python:
 
 ```python
-from mcp.server import Server
-from mcp.server.stdio import stdio_server
-from mcp import types
-import asyncio
+from mcp.server.fastmcp import FastMCP
 
-app = Server("nome-do-servidor")
+mcp = FastMCP("nome-do-servidor")
 
-@app.list_tools()
-async def listar_ferramentas() -> list[types.Tool]:
-    return [
-        types.Tool(
-            name="minha_ferramenta",
-            description="Descrição clara do que faz.",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "parametro": {"type": "string", "description": "..."}
-                },
-                "required": ["parametro"]
-            }
-        )
-    ]
-
-@app.call_tool()
-async def executar(name: str, arguments: dict) -> list[types.TextContent]:
-    if name == "minha_ferramenta":
-        return [types.TextContent(type="text", text=f"Resultado: {arguments['parametro']}")]
-    raise ValueError(f"Ferramenta desconhecida: {name}")
-
-async def main():
-    async with stdio_server() as (read_stream, write_stream):
-        await app.run(read_stream, write_stream, app.create_initialization_options())
+@mcp.tool()
+def minha_ferramenta(parametro: str) -> str:
+    """Descrição da ferramenta."""
+    return f"Resultado: {parametro}"
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    mcp.run()
+```
+
+O `FastMCP` infere automaticamente o schema da ferramenta a partir das anotações de tipo Python.
+
+### Exemplo completo: mcp-somar.py
+
+```python
+from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP("mcp-somar")
+
+@mcp.tool()
+def somar(a: int, b: int) -> int:
+    return a + b
+
+if __name__ == "__main__":
+    mcp.run()
+```
+
+### Exemplo completo: mcp-mensagem.py
+
+```python
+from mcp.server.fastmcp import FastMCP
+
+mcp = FastMCP("mcp-mensagem")
+
+@mcp.tool()
+def enviar_mensagem(mensagem: str) -> str:
+    return f"Mensagem enviada: {mensagem}"
+
+if __name__ == "__main__":
+    mcp.run()
 ```
 
 ## Capacidades além de ferramentas
 
 Um servidor MCP também pode expor:
 
-- **Resources** (`@app.list_resources` / `@app.read_resource`): arquivos ou dados que o Claude pode ler como contexto
-- **Prompts** (`@app.list_prompts` / `@app.get_prompt`): templates de prompt reutilizáveis
+- **Resources** (`@mcp.resource`): arquivos ou dados que o Claude pode ler como contexto
+- **Prompts** (`@mcp.prompt`): templates de prompt reutilizáveis
 
 Consulte a [documentação oficial do MCP](https://modelcontextprotocol.io) para detalhes.
 
