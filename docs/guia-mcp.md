@@ -27,16 +27,12 @@ claude mcp remove <nome> --scope local
 ### Servidores deste projeto
 
 ```bash
-# Registrar o servidor de soma
+# Registrar os servidores
 claude mcp add --scope local mcp-somar python mcp/mcp-somar.py
-
-# Remover o servidor de soma
-claude mcp remove mcp-somar --scope local
-
-# Registrar o servidor de mensagem
 claude mcp add --scope local mcp-mensagem python mcp/mcp-mensagem.py
 
-# Remover o servidor de mensagem
+# Remover os servidores
+claude mcp remove mcp-somar --scope local
 claude mcp remove mcp-mensagem --scope local
 ```
 

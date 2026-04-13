@@ -8,44 +8,55 @@ Repositório de exemplos práticos para aprender a estender o Claude Code com **
 
 ## Configuração do servidor MCP
 
-O servidor MCP usa um virtualenv local. Para configurar:
+Os servidores MCP usam um virtualenv local. Para configurar:
 
 ```bash
 python -m venv .venv
 .venv/bin/pip install mcp
 ```
 
-O servidor é registrado em `.claude/settings.json` e executa `mcp/meu-mcp.py` via `.venv/bin/python`. Reinicie o Claude Code após qualquer alteração na configuração.
+Registre os servidores com o CLI do Claude Code:
+
+```bash
+claude mcp add --scope local mcp-somar python mcp/mcp-somar.py
+claude mcp add --scope local mcp-mensagem python mcp/mcp-mensagem.py
+```
+
+Reinicie o Claude Code após registrar ou alterar servidores MCP.
+
+## Slash commands disponíveis
+
+| Comando | Arquivo | Uso |
+|---------|---------|-----|
+| `/resumir-cmd` | `.claude/commands/resumir-cmd.md` | Resume código em português com propósito, I/O e pontos de atenção |
+| `/revisar-cmd` | `.claude/commands/revisar-cmd.md` | Revisão estruturada: bugs, segurança, qualidade |
+| `/gitlab` | `.claude/commands/gitlab.md` | Formata atividades para o GitLab (issue, MR, épico) com templates |
 
 ## Skills disponíveis
 
-| Comando | Uso |
-|---------|-----|
-| `/resumir <arquivo ou trecho>` | Resume código em português com propósito, I/O e pontos de atenção |
-| `/revisar <arquivo>` | Revisão estruturada: bugs, segurança, qualidade |
+| Skill | Pasta | Quando é acionada |
+|-------|-------|-------------------|
+| `gitlab-formatter` | `.claude/skills/gitlab-formatter/` | Ao mencionar issue, MR, épico ou qualquer atividade GitLab |
+| `skill-creator` | `.claude/skills/skill-creator/` | Ao criar ou melhorar skills com evals |
 
 ## Agents/Subagents disponíveis
 
-| Nome | Ferramentas | Quando usar |
-|------|-------------|-------------|
-| `revisor-codigo` | Read, Grep, Glob, mcp__ide__getDiagnostics | Análise de qualidade, bugs e segurança de código |
-| `pesquisador-docs` | Read, Grep, Glob, WebSearch, WebFetch | Pesquisa em documentação local ou web |
+| Nome | Arquivo | Ferramentas | Quando usar |
+|------|---------|-------------|-------------|
+| `revisor-codigo-agent` | `.claude/agents/revisor-codigo-agent.md` | Read, Grep, Glob, mcp__ide__getDiagnostics | Análise de qualidade, bugs e segurança de código |
+| `pesquisador-docs-agent` | `.claude/agents/pesquisador-docs-agent.md` | Read, Grep, Glob, WebSearch, WebFetch | Pesquisa em documentação local ou web |
 
 O Claude pode invocar esses agents automaticamente ou você pode solicitá-lo explicitamente.
 
-## Ferramentas MCP (servidor `meu-mcp`)
-
-Disponíveis como `mcp__meu-mcp__<nome>`:
+## Ferramentas MCP disponíveis
 
 | Ferramenta | Parâmetros |
 |------------|------------|
-| `mcp__meu-mcp__somar` | `a: int`, `b: int` |
-| `mcp__meu-mcp__enviar_mensagem` | `mensagem: string` |
-
-O servidor está em `mcp/meu-mcp.py` e usa `FastMCP` da biblioteca `mcp`.
+| `mcp__mcp-somar__somar` | `a: int`, `b: int` |
+| `mcp__mcp-mensagem__enviar_mensagem` | `mensagem: string` |
 
 ## Documentação detalhada
 
-- [Skills](docs/guia-skills.md)
+- [Skills e Slash Commands](docs/guia-skills.md)
 - [Agents e Subagents](docs/guia-agents-subagents.md)
 - [Servidor MCP](docs/guia-mcp.md)

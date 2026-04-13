@@ -8,7 +8,8 @@ Exemplos práticos para aprender a estender o **Claude Code** com skills, agents
 .
 ├── .claude/
 │   ├── agents/          # Definições de agents/subagents
-│   ├── commands/        # Skills (slash commands)
+│   ├── commands/        # Slash commands simples (atalhos de prompt)
+│   ├── skills/          # Skills avançadas com templates e lógica própria
 │   └── settings.json    # Configuração local (MCP, permissões)
 ├── docs/                # Guias detalhados
 ├── mcp/                 # Servidores MCP em Python
@@ -22,21 +23,33 @@ python -m venv .venv
 .venv/bin/pip install mcp anthropic
 ```
 
-## Skills (slash commands)
+## Skills e Slash Commands
+
+Há dois tipos de comandos disponíveis neste projeto:
+
+**Slash commands simples** — arquivo único em `.claude/commands/`:
 
 | Comando | O que faz |
 |---------|-----------|
-| `/resumir <arquivo>` | Resume código em português com propósito, I/O e pontos de atenção |
-| `/revisar <arquivo>` | Revisão estruturada: bugs, segurança e qualidade |
+| `/resumir-cmd <arquivo>` | Resume código em português com propósito, I/O e pontos de atenção |
+| `/revisar-cmd <arquivo>` | Revisão estruturada: bugs, segurança e qualidade |
+| `/gitlab <descrição>` | Formata atividade para o GitLab usando templates markdown |
+
+**Skills avançadas** — pasta própria em `.claude/skills/` com templates e recursos:
+
+| Skill | O que faz |
+|-------|-----------|
+| `gitlab-formatter` | Formata issues, MRs e épicos para GitLab com templates em `assets/` |
+| `skill-creator` | Cria e itera novas skills com evals e benchmark automatizados |
 
 ## Agents/Subagents
 
 | Agent | Especialidade |
 |-------|---------------|
-| `revisor-codigo` | Análise de qualidade, bugs e segurança de código |
-| `pesquisador-docs` | Pesquisa em documentação local ou web |
+| `revisor-codigo-agent` | Análise de qualidade, bugs e segurança de código |
+| `pesquisador-docs-agent` | Pesquisa em documentação local ou web |
 
-Exemplo de uso explícito:
+O Claude pode invocar esses agents automaticamente ou você pode solicitar explicitamente:
 ```
 Analise este arquivo e depois delegue a revisão ao agent especializado.
 ```
@@ -46,10 +59,7 @@ Analise este arquivo e depois delegue a revisão ao agent especializado.
 ### Registrar
 
 ```bash
-# Servidor de soma
 claude mcp add --scope local mcp-somar python mcp/mcp-somar.py
-
-# Servidor de mensagem
 claude mcp add --scope local mcp-mensagem python mcp/mcp-mensagem.py
 ```
 
@@ -75,6 +85,6 @@ ANTHROPIC_API_KEY=sua-chave .venv/bin/python src/exemplo_claude.py
 
 ## Documentação
 
-- [Skills](docs/guia-skills.md)
+- [Skills e Slash Commands](docs/guia-skills.md)
 - [Agents e Subagents](docs/guia-agents-subagents.md)
 - [Servidor MCP](docs/guia-mcp.md)

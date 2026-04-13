@@ -6,7 +6,7 @@
 
 **Subagent** é o mesmo conceito visto pelo ângulo de quem invoca: quando o Claude principal delega uma tarefa a um agent definido, esse agent está atuando como *subagent* — ele roda em contexto isolado e retorna apenas o resultado final.
 
-A mesma definição em `.claude/agents/` serve tanto para uso autônomo (o Claude decide invocar) quanto para uso explícito (você pede via ferramenta `Agent`).
+A mesma definição em `.claude/agents/` serve tanto para uso autônomo (o Claude decide invocar) quanto para uso explícito (você pede).
 
 ## Estrutura do arquivo
 
@@ -32,7 +32,7 @@ e qualquer instrução permanente para este especialista.
 
 | Campo | Obrigatório | Descrição |
 |-------|-------------|-----------|
-| `name` | Sim | Identificador usado em `subagent_type` |
+| `name` | Sim | Identificador do agent |
 | `description` | Sim | Texto que o Claude lê para decidir quando usar o agent |
 | `model` | Não | Modelo a usar. Padrão: herda do pai |
 | `tools` | Não | Ferramentas permitidas. Se omitido, herda do pai |
@@ -48,26 +48,26 @@ e qualquer instrução permanente para este especialista.
 
 ## Agents neste projeto
 
-| Agent | Arquivo | Especialidade |
-|-------|---------|---------------|
-| `revisor-codigo` | `.claude/agents/revisor-codigo.md` | Revisão de qualidade, bugs e segurança |
-| `pesquisador-docs` | `.claude/agents/pesquisador-docs.md` | Pesquisa em docs e web |
+| Agent | Arquivo | Especialidade | Ferramentas |
+|-------|---------|---------------|-------------|
+| `revisor-codigo-agent` | `.claude/agents/revisor-codigo-agent.md` | Revisão de qualidade, bugs e segurança | Read, Grep, Glob, mcp__ide__getDiagnostics |
+| `pesquisador-docs-agent` | `.claude/agents/pesquisador-docs-agent.md` | Pesquisa em docs locais e web | Read, Grep, Glob, WebSearch, WebFetch |
 
 ## Como o Claude invoca agents automaticamente
 
-O Claude lê o campo `description` de todos os agents disponíveis. Se uma tarefa corresponde à descrição, ele pode invocar o agent sem você precisar pedir. Quanto mais precisa a description, melhor o match.
+O Claude lê o campo `description` de todos os agents disponíveis. Se uma tarefa corresponde à descrição, ele pode invocar o agent sem você precisar pedir. Quanto mais precisa a `description`, melhor o match.
 
-**Exemplo:** se você pedir *"revise o arquivo auth.py"*, o Claude pode automaticamente delegar ao `revisor-codigo` porque a description menciona "revisão de código".
+**Exemplo:** se você pedir *"revise o arquivo auth.py"*, o Claude pode automaticamente delegar ao `revisor-codigo-agent` porque a description menciona "revisão de código".
 
-## Como invocar explicitamente (via ferramenta Agent)
+## Como invocar explicitamente
 
-Em prompts que você escreve para o Claude (skills, outros agents):
+Em prompts ou skills, você pode pedir ao Claude que delegue a um agent:
 
 ```
 Analise este arquivo e depois delegue a revisão ao agent especializado.
 ```
 
-O Claude usará a ferramenta `Agent` internamente com `subagent_type: "revisor-codigo"`.
+O Claude usará a ferramenta `Agent` internamente com o `subagent_type` correspondente.
 
 ## Isolamento de contexto
 
@@ -75,7 +75,7 @@ Subagents **não veem o histórico da conversa principal**. Eles recebem apenas:
 - O prompt da tarefa que lhes foi passada
 - Seu próprio system prompt (o corpo do `.md`)
 
-Isso é intencional: mantém o contexto limpo e evita vazamento de informações entre tarefas.
+Isso mantém o contexto limpo e evita vazamento de informações entre tarefas.
 
 ## Escopo: local vs global
 
@@ -83,3 +83,5 @@ Isso é intencional: mantém o contexto limpo e evita vazamento de informações
 |-----------------|------------------|
 | `.claude/agents/` | `~/.claude/agents/` |
 | Só disponível neste projeto | Disponível em qualquer projeto |
+
+Este projeto usa **apenas configuração local**.
