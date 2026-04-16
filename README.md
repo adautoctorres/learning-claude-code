@@ -1,4 +1,4 @@
-# learning-ai
+# learning-claude-code
 
 Exemplos práticos para aprender a estender o **Claude Code** com skills, agents/subagents e servidores MCP. Toda configuração é local (`.claude/`) — nada é instalado globalmente.
 
