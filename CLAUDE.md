@@ -20,6 +20,16 @@ Registre os servidores com o CLI do Claude Code:
 ```bash
 claude mcp add --scope local mcp-somar python mcp/mcp-somar.py
 claude mcp add --scope local mcp-mensagem python mcp/mcp-mensagem.py
+claude mcp add --scope local mcp-oracle python mcp/mcp-oracle.py
+```
+
+O servidor `mcp-oracle` requer a lib `oracledb` e três variáveis de ambiente:
+
+```bash
+.venv/bin/pip install oracledb
+export ORACLE_USER=usuario
+export ORACLE_PASSWORD=senha
+export ORACLE_DSN=host:1521/service_name
 ```
 
 Reinicie o Claude Code após registrar ou alterar servidores MCP.
@@ -54,6 +64,11 @@ O Claude pode invocar esses agents automaticamente ou você pode solicitá-lo ex
 |------------|------------|
 | `mcp__mcp-somar__somar` | `a: int`, `b: int` |
 | `mcp__mcp-mensagem__enviar_mensagem` | `mensagem: string` |
+| `mcp__mcp-oracle__executar_query` | `sql: string`, `parametros?: dict` |
+| `mcp__mcp-oracle__executar_dml` | `sql: string`, `parametros?: dict` |
+| `mcp__mcp-oracle__listar_tabelas` | `schema?: string` |
+| `mcp__mcp-oracle__descrever_tabela` | `tabela: string`, `schema?: string` |
+| `mcp__mcp-oracle__executar_procedure` | `nome: string`, `parametros?: dict` |
 
 ## Documentação detalhada
 
