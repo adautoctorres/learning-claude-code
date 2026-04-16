@@ -19,12 +19,8 @@ Exemplos práticos para aprender a estender o **Claude Code** com skills, agents
 ## Pré-requisitos
 
 ```bash
-python -m venv .venv
-.venv/bin/pip install mcp anthropic
-
-# Dependências extras por servidor MCP
-.venv/bin/pip install oracledb        # mcp-oracle
-.venv/bin/pip install msal httpx      # mcp-teams
+uv venv        # cria o ambiente virtual em .venv
+uv sync        # instala as dependências do pyproject.toml
 ```
 
 ## Skills e Slash Commands
