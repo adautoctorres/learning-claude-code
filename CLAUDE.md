@@ -21,6 +21,7 @@ Registre os servidores com o CLI do Claude Code:
 claude mcp add --scope local mcp-somar python mcp/mcp-somar.py
 claude mcp add --scope local mcp-mensagem python mcp/mcp-mensagem.py
 claude mcp add --scope local mcp-oracle python mcp/mcp-oracle.py
+claude mcp add --scope local mcp-teams python mcp/mcp-teams.py
 ```
 
 O servidor `mcp-oracle` requer a lib `oracledb` e três variáveis de ambiente:
@@ -30,6 +31,15 @@ O servidor `mcp-oracle` requer a lib `oracledb` e três variáveis de ambiente:
 export ORACLE_USER=usuario
 export ORACLE_PASSWORD=senha
 export ORACLE_DSN=host:1521/service_name
+```
+
+O servidor `mcp-teams` requer as libs `msal` e `httpx` e três variáveis de ambiente:
+
+```bash
+.venv/bin/pip install msal httpx
+export TEAMS_TENANT_ID=seu-tenant-id
+export TEAMS_CLIENT_ID=seu-client-id
+export TEAMS_CLIENT_SECRET=seu-client-secret
 ```
 
 Reinicie o Claude Code após registrar ou alterar servidores MCP.
@@ -69,6 +79,14 @@ O Claude pode invocar esses agents automaticamente ou você pode solicitá-lo ex
 | `mcp__mcp-oracle__listar_tabelas` | `schema?: string` |
 | `mcp__mcp-oracle__descrever_tabela` | `tabela: string`, `schema?: string` |
 | `mcp__mcp-oracle__executar_procedure` | `nome: string`, `parametros?: dict` |
+| `mcp__mcp-teams__listar_equipes` | — |
+| `mcp__mcp-teams__listar_canais` | `team_id: string` |
+| `mcp__mcp-teams__ler_mensagens_canal` | `team_id: string`, `channel_id: string`, `limite?: int` |
+| `mcp__mcp-teams__enviar_mensagem_canal` | `team_id: string`, `channel_id: string`, `mensagem: string`, `formato?: string` |
+| `mcp__mcp-teams__responder_mensagem_canal` | `team_id: string`, `channel_id: string`, `message_id: string`, `mensagem: string`, `formato?: string` |
+| `mcp__mcp-teams__listar_chats` | — |
+| `mcp__mcp-teams__ler_mensagens_chat` | `chat_id: string`, `limite?: int` |
+| `mcp__mcp-teams__enviar_mensagem_chat` | `chat_id: string`, `mensagem: string`, `formato?: string` |
 
 ## Documentação detalhada
 

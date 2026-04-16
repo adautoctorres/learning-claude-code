@@ -21,6 +21,10 @@ Exemplos práticos para aprender a estender o **Claude Code** com skills, agents
 ```bash
 python -m venv .venv
 .venv/bin/pip install mcp anthropic
+
+# Dependências extras por servidor MCP
+.venv/bin/pip install oracledb        # mcp-oracle
+.venv/bin/pip install msal httpx      # mcp-teams
 ```
 
 ## Skills e Slash Commands
@@ -61,6 +65,8 @@ Analise este arquivo e depois delegue a revisão ao agent especializado.
 ```bash
 claude mcp add --scope local mcp-somar python mcp/mcp-somar.py
 claude mcp add --scope local mcp-mensagem python mcp/mcp-mensagem.py
+claude mcp add --scope local mcp-oracle python mcp/mcp-oracle.py
+claude mcp add --scope local mcp-teams python mcp/mcp-teams.py
 ```
 
 ### Remover
@@ -68,14 +74,29 @@ claude mcp add --scope local mcp-mensagem python mcp/mcp-mensagem.py
 ```bash
 claude mcp remove mcp-somar --scope local
 claude mcp remove mcp-mensagem --scope local
+claude mcp remove mcp-oracle --scope local
+claude mcp remove mcp-teams --scope local
 ```
 
 ### Ferramentas disponíveis
 
-| Ferramenta MCP | Parâmetros |
-|----------------|------------|
-| `mcp__mcp-somar__somar` | `a: int`, `b: int` |
-| `mcp__mcp-mensagem__enviar_mensagem` | `mensagem: str` |
+| Servidor | Ferramenta MCP | Parâmetros |
+|----------|----------------|------------|
+| `mcp-somar` | `mcp__mcp-somar__somar` | `a: int`, `b: int` |
+| `mcp-mensagem` | `mcp__mcp-mensagem__enviar_mensagem` | `mensagem: str` |
+| `mcp-oracle` | `mcp__mcp-oracle__executar_query` | `sql: str`, `parametros?: dict` |
+| `mcp-oracle` | `mcp__mcp-oracle__executar_dml` | `sql: str`, `parametros?: dict` |
+| `mcp-oracle` | `mcp__mcp-oracle__listar_tabelas` | `schema?: str` |
+| `mcp-oracle` | `mcp__mcp-oracle__descrever_tabela` | `tabela: str`, `schema?: str` |
+| `mcp-oracle` | `mcp__mcp-oracle__executar_procedure` | `nome: str`, `parametros?: dict` |
+| `mcp-teams` | `mcp__mcp-teams__listar_equipes` | — |
+| `mcp-teams` | `mcp__mcp-teams__listar_canais` | `team_id: str` |
+| `mcp-teams` | `mcp__mcp-teams__ler_mensagens_canal` | `team_id: str`, `channel_id: str`, `limite?: int` |
+| `mcp-teams` | `mcp__mcp-teams__enviar_mensagem_canal` | `team_id: str`, `channel_id: str`, `mensagem: str`, `formato?: str` |
+| `mcp-teams` | `mcp__mcp-teams__responder_mensagem_canal` | `team_id: str`, `channel_id: str`, `message_id: str`, `mensagem: str` |
+| `mcp-teams` | `mcp__mcp-teams__listar_chats` | — |
+| `mcp-teams` | `mcp__mcp-teams__ler_mensagens_chat` | `chat_id: str`, `limite?: int` |
+| `mcp-teams` | `mcp__mcp-teams__enviar_mensagem_chat` | `chat_id: str`, `mensagem: str`, `formato?: str` |
 
 ## Exemplo de uso da API Anthropic
 
